@@ -43,6 +43,7 @@ El diseño del programa se baso en el diagrama de flujo adjuntado en la carpeta 
 📹 Video Demostrativo
 
 Puedes ver el video explicativo y demostrativo del juego en el siguiente enlace:
+https://www.youtube.com/watch?v=0Oj4GbXqDLM
 
 🚀 Ejecución
 
