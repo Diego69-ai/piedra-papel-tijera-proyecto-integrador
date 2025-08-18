@@ -3,11 +3,6 @@ import random
 # Opciones válidas
 opciones = ["piedra", "papel", "tijera"]
 
-# Estadísticas globales (se reinician al iniciar nuevas partidas)
-estadisticas = {}
-resumen = []
-partidas_jugadas = 0
-
 # Función para determinar el ganador
 def determinar_ganador(jugador1, jugador2):
     if jugador1 == jugador2:
@@ -29,7 +24,7 @@ def mostrar_reglas():
     print("¡Diviértete!\n")
 
 # Función para mostrar estadísticas
-def mostrar_estadisticas():
+def mostrar_estadisticas(estadisticas, resumen, partidas_jugadas):
     if partidas_jugadas == 0:
         print("\nNo hay estadísticas recientes.\n")
     else:
@@ -43,8 +38,7 @@ def mostrar_estadisticas():
         print("")
 
 # Función para actualizar estadísticas
-def actualizar_estadisticas(nombre1, nombre2, resultado):
-    global estadisticas, resumen
+def actualizar_estadisticas(nombre1, nombre2, resultado, estadisticas, resumen):
     if nombre1 not in estadisticas:
         estadisticas[nombre1] = {"ganadas": 0, "perdidas": 0, "empates": 0}
     if nombre2 not in estadisticas:
@@ -63,40 +57,10 @@ def actualizar_estadisticas(nombre1, nombre2, resultado):
         estadisticas[nombre1]["perdidas"] += 1
         resumen.append(f"{nombre1} perdió - {nombre2} ganó")
 
-# Función para jugar en cualquier modo
-def jugar(modo):
-    global partidas_jugadas, estadisticas, resumen
-    estadisticas = {}
-    resumen = []
-    partidas_jugadas = 0
-
-    if modo == "1":
-        nombre1 = input("Ingrese el nombre del jugador: ")
-        nombre2 = "Computadora"
-    elif modo == "2":
-        nombre1 = input("Ingrese el nombre del Jugador 1: ")
-        nombre2 = input("Ingrese el nombre del Jugador 2: ")
-    else:
-        print("Modo inválido")
-        return
-
-    definir = input("¿Desea definir un número de partidas? (s/n): ").lower()
-    if definir == "s":
-        n = int(input("Ingrese el número de partidas: "))
-        for _ in range(n):
-            partidas_jugadas += 1
-            partida(nombre1, nombre2, modo)
-    else:
-        seguir = "s"
-        while seguir == "s":
-            partidas_jugadas += 1
-            partida(nombre1, nombre2, modo)
-            seguir = input("¿Desea jugar otra partida? (s/n): ").lower()
-
-    mostrar_estadisticas()
+    return estadisticas, resumen
 
 # Función para jugar una partida
-def partida(nombre1, nombre2, modo):
+def partida(nombre1, nombre2, modo, estadisticas, resumen):
     if modo == "1":  # Contra computadora
         jug1 = input(f"{nombre1}, elige piedra, papel o tijera: ").lower()
         while jug1 not in opciones:
@@ -120,7 +84,38 @@ def partida(nombre1, nombre2, modo):
     else:
         print(f"¡Ganó {nombre2}!")
 
-    actualizar_estadisticas(nombre1, nombre2, resultado)
+    return actualizar_estadisticas(nombre1, nombre2, resultado, estadisticas, resumen)
+
+# Función para jugar en cualquier modo
+def jugar(modo):
+    estadisticas = {}
+    resumen = []
+    partidas_jugadas = 0
+
+    if modo == "1":
+        nombre1 = input("Ingrese el nombre del jugador: ")
+        nombre2 = "Computadora"
+    elif modo == "2":
+        nombre1 = input("Ingrese el nombre del Jugador 1: ")
+        nombre2 = input("Ingrese el nombre del Jugador 2: ")
+    else:
+        print("Modo inválido")
+        return
+
+    definir = input("¿Desea definir un número de partidas? (s/n): ").lower()
+    if definir == "s":
+        n = int(input("Ingrese el número de partidas: "))
+        for _ in range(n):
+            partidas_jugadas += 1
+            estadisticas, resumen = partida(nombre1, nombre2, modo, estadisticas, resumen)
+    else:
+        seguir = "s"
+        while seguir == "s":
+            partidas_jugadas += 1
+            estadisticas, resumen = partida(nombre1, nombre2, modo, estadisticas, resumen)
+            seguir = input("¿Desea jugar otra partida? (s/n): ").lower()
+
+    mostrar_estadisticas(estadisticas, resumen, partidas_jugadas)
 
 # Programa principal
 while True:
@@ -142,7 +137,7 @@ while True:
     elif opcion == "2":
         mostrar_reglas()
     elif opcion == "3":
-        mostrar_estadisticas()
+        print("Primero debes jugar alguna partida para ver estadísticas.")
     elif opcion == "4":
         print("Saliendo del juego. ¡Gracias por jugar!")
         break
